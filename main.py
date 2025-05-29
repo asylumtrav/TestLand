@@ -96,8 +96,8 @@ def resource_path(relative_path):
 # --- Upgrade Data ---
 click_upgrades = [
     {"name": "Pixel Puncher", "base_cost": 10, "click_power": 0.1, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/fingerstorm.png"},
+    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/thumbstrength.png"},
     {"name": "Tendon Tornado", "base_cost": 200, "click_power": 0.6, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
     {"name": "Infinite Index", "base_cost": 500, "click_power": 0.8, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
     {"name": "Carpal Karma", "base_cost": 1000, "click_power": 1.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
