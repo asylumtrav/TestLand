@@ -675,8 +675,8 @@ def draw_achievements_screen(surface, window_width, window_height, state, big_fo
     for i, ach in enumerate(sorted_achievements):
         y = container_rect.top + i * (achievement_height + spacing) - state.achievement_scroll
         rect = pygame.Rect(container_rect.left + 10, y, container_rect.width - 20, achievement_height)
-
-        hover = rect.collidepoint(mouse_pos)
+        if hover:
+            hover = rect.collidepoint(mouse_pos)
 
         # Background color with hover effect
         color = ACHIEVEMENT_BG
@@ -782,7 +782,7 @@ def main():
         print(f"Failed to load icon: {e}")
 
     
-
+    tooltip_queue = []
     font_base_size = 24
     font_big_size = 32
 
@@ -830,7 +830,9 @@ def main():
 
     while True:
         dt = clock.tick(FPS) / 1000.0
+        tooltip_queue.clear()
         mouse_pos = pygame.mouse.get_pos()
+        tooltip_queue = []
 
         clicked_close_stats = False
         clicked_close_settings = False
@@ -898,6 +900,9 @@ def main():
 
         coin_radius = max(40, int(window_height * 0.15))
         coin_pos = (left_width // 2, window_height // 2)
+
+
+        ######################################DRAWING##################################################
 
         screen.fill(BG_COLOR)
 
@@ -1090,7 +1095,7 @@ def main():
                 shop_content_width = right_width - 2 * shop_box_margin
                 shop_box_width = int((shop_content_width - (shop_box_count - 1) * shop_box_gap) / shop_box_count)
                 
-                tooltip_drawn = False
+                #tooltip_drawn = False
 
                 sorted_multipliers = sorted(
                     [m for m in state.multiplier_upgrades if not m["purchased"]],
@@ -1117,7 +1122,8 @@ def main():
 
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
-                    hover = rect.collidepoint(mouse_pos)
+                    if hover:
+                        hover = rect.collidepoint(mouse_pos)
                     can_afford = state.coins >= m["cost"]
 
                     # FIRST: draw background box BEFORE image
@@ -1215,7 +1221,8 @@ def main():
                 for i, upg in enumerate(visible_upgrades):
                     y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
                     rect = pygame.Rect(left_width + 20, y, right_width - 40, upgrade_height)
-                    hover = rect.collidepoint(mouse_pos)
+                    if hover:
+                        hover = rect.collidepoint(mouse_pos)
 
                     multi = MULTIPLIERS[state.buy_multiplier_index]
                     n_levels = state.max_affordable_levels(upg) if multi == 'max' else multi
@@ -1265,8 +1272,8 @@ def main():
                         tooltip_x = rect.centerx - tooltip_width // 2
                         tooltip_y = rect.bottom + 10
                         tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
-
-                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ Only append
+                        
+                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ store for later
 
 
                     # === Click Logic ===
