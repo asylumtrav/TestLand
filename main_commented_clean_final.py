@@ -150,7 +150,7 @@ def generate_multiplier_upgrades(base_name, base_type, base_index, base_cost, re
         boost = 0.02 * (1.15 ** level)
         requires_owned = requires_owned_list[i] if i < len(requires_owned_list) else level
         upgrades.append({
-            "name": f"{base_name} Boost Lv {level}",
+            "name": f"{base_name}",
             "associated_upgrade_index": base_index,
             "type": base_type,
             "level": level,
@@ -1276,12 +1276,12 @@ def main():
 
                     # TOOLTIP (drawn last)
                     if hover and not tooltip_drawn:
-                        base_name = m['name'].split(' Boost')[0]
                         tooltip_text = (
-                            f"{m['name']}\n"                  # Ex: "Pixel Puncher Boost Lv 1"
-                            f"Cost: {format_large_number(m['cost'])}\n"  # Ex: "Cost: 12"
-                            f"Boost: +{int(m['boost_percent']*100)}%"    # Ex: "Boost: +2%"
-)
+                            f"{m['name']}\n"
+                            f"Level: {m['level']}\n"
+                            f"Cost: {format_large_number(m['cost'])}\n"
+                            f"Boost: +{int(m['boost_percent'] * 100)}%"
+                        )
                         tooltip_width = 200
                         tooltip_height = 60
                         tooltip_x = rect.centerx - tooltip_width // 2
@@ -1434,10 +1434,12 @@ def main():
                     hover = rect.collidepoint(mouse_pos)
                     if hover:
                         tooltip_text = (
-                            f"{upg['name']}\n"
-                            f"Cost: {format_large_number(upg['base_cost'])}\n"
-                            f"+{int(upg.get('click_power', upg.get('cps', 0)))} Power"
+                            f"{m['name']}\n"
+                            f"Level: {m['level']}\n"
+                            f"Cost: {format_large_number(m['cost'])}\n"
+                            f"Boost: +{int(m['boost_percent'] * 100)}%"
                         )
+
                         tooltip_width = 200
                         tooltip_height = 60
                         tooltip_x = rect.centerx - tooltip_width // 2
