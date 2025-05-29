@@ -771,15 +771,6 @@ def main():
     except Exception as e:
         print(f"Failed to load icon: {e}")
 
-    try:
-        test_img = pygame.image.load("C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png").convert_alpha()
-        print("Test image loaded successfully")
-        screen.blit(test_img, (100, 100))
-        pygame.display.flip()
-        pygame.time.wait(2000)
-    except Exception as e:
-        print("Test image load failed:", e)
-
     
 
     font_base_size = 24
@@ -1091,7 +1082,7 @@ def main():
 
                     can_afford = state.coins >= m["cost"]
                     
-                    # --- Draw Image from Path for upgrades---
+                    ## --- Draw Image from Path for upgrades---
                     image_path = m.get("image_path")
                     if image_path and os.path.isfile(image_path):
                         try:
