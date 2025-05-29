@@ -133,6 +133,32 @@ auto_upgrades = [
 # If all buildings use the same thresholds, just do:
 standard_requires_owned = [1, 10, 25, 50, 100, 200, 300, 400, 500, 600]
 
+def generate_multiplier_upgrades(base_name, base_type, base_index, base_cost, requires_owned_list, num_levels=10):
+    upgrades = []
+    for i in range(num_levels):
+        level = i + 1
+        cost = base_cost * (1.15 ** level)
+        boost = 0.02 * (1.15 ** level)
+        requires_owned = requires_owned_list[i] if i < len(requires_owned_list) else level
+        upgrades.append({
+            "name": f"{base_name} Boost Lv {level}",
+            "associated_upgrade_index": base_index,
+            "type": base_type,
+            "level": level,
+            "cost": round(cost),
+            "boost_percent": round(boost, 4),
+            "purchased": False,
+            "requires_owned": requires_owned
+        })
+    return upgrades
+
+    cps_multipliers = []
+    for idx, upg in enumerate(auto_upgrades):
+        cps_multipliers.extend(
+            generate_multiplier_upgrades(
+                upg["name"], "CPS", idx, upg["base_cost"], standard_requires_owned, num_levels=len(standard_requires_owned)
+            )
+        )
 
 # --- Achievement Data ---
 def generate_achievements():
@@ -186,29 +212,6 @@ def generate_achievements():
             "desc": f"Click the coin {format_large_number(c)} times.",
             "unlocked_time": None,
         })
-
-def generate_multipliers_for_all(upgrade_list, upgrade_type):
-    all_multipliers = []
-    for index, upgrade in enumerate(upgrade_list):
-        base_name = upgrade["name"]
-        base_cost = upgrade.get("base_cost", upgrade.get("base_cost_initial", 10))
-        filename = base_name.lower().replace(" ", "").replace(":", "") + ".png"
-        image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/{filename}"
-
-        for level in range(1, 51):
-            cost = base_cost * (1.15 ** level)
-            boost = 0.02 * (1.15 ** level)
-            all_multipliers.append({
-                "name": f"{base_name} Boost Lv {level}",
-                "associated_upgrade_index": index,
-                "type": upgrade_type,
-                "level": level,
-                "cost": round(cost),
-                "boost_percent": round(boost, 4),
-                "purchased": False,
-                "image_path": image_path
-            })
-    return all_multipliers
 
 
     # All-time money achievements (category: 'money')
