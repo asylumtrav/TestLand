@@ -247,7 +247,7 @@ def generate_achievements():
 # --- Game State ---
 class GameState:
     def __init__(self):
-        self.coins = 0.0
+        self.coins = 100000000000
         self.all_time_coins = 0.0
         self.prestige = 0
         self.base_click_power = 1.0
@@ -1164,14 +1164,26 @@ def main():
 
                 # 1. Assign active_multipliers based on tab
                 if state.active_tab == "CP":
-                    active_multipliers = [m for m in state.cp_multipliers if not m["purchased"]]
-                    upgrade_type = "click"
+                    visible_multipliers = [
+                        m for m in state.cp_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.click_upgrades)
+                            and state.click_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
+                elif state.active_tab == "CPS":
+                    visible_multipliers = [
+                        m for m in state.cps_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.auto_upgrades)
+                            and state.auto_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
                 else:
-                    active_multipliers = [m for m in state.cps_multipliers if not m["purchased"]]
-                    upgrade_type = "auto"
-
+                    visible_multipliers = []
                 # 2. Only after assignment, you can slice and use it
-                visible_multipliers = active_multipliers[:5]
                 shop_box_count = 5
                 shop_box_margin = 20
                 shop_box_gap = 20
@@ -1192,7 +1204,7 @@ def main():
                 tooltip_text = None
                 tooltip_rect = None
                 grouped = defaultdict(list)
-                for m in active_multipliers:
+                for m in visible_multipliers:
                     if not m["purchased"]:
                         base_name = m["name"].split(" Boost")[0]
                         grouped[base_name].append(m)
