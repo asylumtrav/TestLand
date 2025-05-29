@@ -916,8 +916,6 @@ def main():
         clicked_close_stats = False
         clicked_close_settings = False
         clicked_close_achievements = False
-        upgrade_height = max(60, int(window_width * 0.09))
-        upgrade_margin = 10
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1166,12 +1164,25 @@ def main():
 
                 # 1. Assign active_multipliers based on tab
                 if state.active_tab == "CP":
-                    visible_upgrades = state.click_upgrades
+                    visible_multipliers = [
+                        m for m in state.cp_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.click_upgrades)
+                            and state.click_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
                 elif state.active_tab == "CPS":
-                    visible_upgrades = state.auto_upgrades
+                    visible_multipliers = [
+                        m for m in state.cps_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.auto_upgrades)
+                            and state.auto_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
                 else:
-                    visible_upgrades = []
-                    
+                    visible_multipliers = []
                 # 2. Only after assignment, you can slice and use it
                 shop_box_count = 5
                 shop_box_margin = 20
@@ -1181,8 +1192,9 @@ def main():
                 shop_content_width = right_width - 2 * shop_box_margin
                 shop_box_width = int((shop_content_width - (shop_box_count - 1) * shop_box_gap) / shop_box_count)
 
-                hovered_tooltip = None
-                for i, m in enumerate(visible_upgrades):
+                tooltip_drawn = False
+
+                for i, m in enumerate(visible_multipliers):
                     # draw, flash, handle buy, etc.
                     pass
 
@@ -1192,47 +1204,45 @@ def main():
                 tooltip_text = None
                 tooltip_rect = None
                 grouped = defaultdict(list)
-                for m in visible_upgrades:
-                    if not m.get("purchased", False):
+                for m in visible_multipliers:
+                    if not m["purchased"]:
                         base_name = m["name"].split(" Boost")[0]
                         grouped[base_name].append(m)
 
                 # Get the cheapest upgrade from each group
-                cheapest_per_type = [
-                    min([x for x in group if "cost" in x], key=lambda x: x["cost"])
-                    for group in grouped.values() if any("cost" in x for x in group)
-                ]
+                cheapest_per_type = [min(group, key=lambda x: x["cost"]) for group in grouped.values()]
 
                 # Sort those by cost and select the top 5
                 visible_multipliers = sorted(cheapest_per_type, key=lambda m: m["cost"])[:5]
-                tooltip_drawn = False  # Prevent multiple tooltips from showing at once
-                
-                # --- UNIFIED HOVER/TOOLTIP HANDLER ---
-                hovered_tooltip = None
 
-                # --- SHOP MULTIPLIER BOXES ---
+                tooltip_drawn = False  # Prevent multiple tooltips from showing at once
                 for i, m in enumerate(visible_multipliers):
+
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
+                    hover = rect.collidepoint(mouse_pos)
+                    if hover:
+                        hover = rect.collidepoint(mouse_pos)
                     can_afford = state.coins >= m["cost"]
 
-                    # Draw background
+                    # FIRST: draw background box BEFORE image
+                    # 1. Draw the shop box background
                     pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=8)
 
-                    # Handle hover for tooltip
-                    if rect.collidepoint(mouse_pos):
-                        hovered_tooltip = (m, rect, 'multiplier')
-
-                    # Draw image if exists
+                    # 2. Draw the image
+                    image_rendered = False
+                    # === DRAW UPGRADE/SHOP IMAGE OR FALLBACK ===
+                    image_path = m.get("image_path")
                     image_to_draw = None
+
                     image_path = m.get("image_path")
                     if image_path and os.path.exists(image_path):
                         try:
-                            image_to_draw = pygame.image.load(image_path).convert_alpha()
+                            image = pygame.image.load(image_path).convert_alpha()
                         except Exception as e:
                             print(f"Failed to load image for {m['name']}: {e}")
 
-                    # Fallback image
+                    # Fallback if image is missing or load failed
                     if image_to_draw is None:
                         placeholder_path = os.path.join(ASSETS_DIR, "pixelpuncher.png")
                         if os.path.exists(placeholder_path):
@@ -1243,70 +1253,48 @@ def main():
                         else:
                             print(f"Placeholder not found at {placeholder_path}")
 
+                    # Only render if something was loaded
                     if image_to_draw:
                         image_to_draw = pygame.transform.smoothscale(image_to_draw, (rect.width, rect.height))
                         screen.blit(image_to_draw, rect.topleft)
+                    else:
+                        print(f"Nothing to render for {m['name']}")
 
-                    # Overlay if not affordable
+
+                    # OVERLAY if too expensive
                     if not can_afford:
                         overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
                         overlay.fill((0, 0, 0, 100))
                         screen.blit(overlay, rect.topleft)
 
-                    # Buy logic
-                    if mouse_down and rect.collidepoint(mouse_pos) and can_afford:
+                    # HANDLE BUY
+                    if mouse_down and hover and can_afford:
                         state.coins -= m["cost"]
                         m["purchased"] = True
-                        state.shop_box_flash_timers[i] = pygame.time.get_ticks()
+                        state.shop_box_flash_timers[i] = pygame.time.get_ticks()  # ← trigger flash
                         mouse_down = False
 
-                # --- Push upgrades below multiplier boxes ---
-                start_y += shop_box_height + 10
-
-                # --- UPGRADE BUTTONS ---
-                for i, upg in enumerate(visible_upgrades):
-                    y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
-                    rect = pygame.Rect(left_width + 20, y, right_width - 40, upgrade_height)
-                    can_buy = state.can_buy_upgrade(upg, 1)
-                    hover = rect.collidepoint(mouse_pos)
-                    if hover:
-                        hovered_tooltip = (upg, rect, 'upgrade')
-
-                    draw_button(screen, rect, enabled=can_buy, hover=hover)
-
-                    # (Draw your upgrade's image/text here if you have that logic)
-
-                # --- TOOLTIP DRAWING ---
-                if hovered_tooltip:
-                    item, rect, kind = hovered_tooltip
-                    if kind == 'multiplier':
+                    # TOOLTIP (drawn last)
+                    if hover and not tooltip_drawn:
                         tooltip_text = (
-                            f"{item['name']}\n"
-                            f"Level: {item['level']}\n"
-                            f"Cost: {format_large_number(item['cost'])}\n"
-                            f"Boost: +{int(item['boost_percent'] * 100)}%"
+                            f"{m['name']}\n"
+                            f"Level: {m['level']}\n"
+                            f"Cost: {format_large_number(m['cost'])}\n"
+                            f"Boost: +{int(m['boost_percent'] * 100)}%"
                         )
-                    elif kind == 'upgrade':
-                        tooltip_text = (
-                            f"{item['name']}\n"
-                            f"Cost: {format_large_number(item.get('base_cost', item.get('cost', 0)))}\n"
-                            f"Owned: {item.get('owned', 0)}\n"
-                            f"Effect: {item.get('effect', 'N/A')}"
-                        )
+                        tooltip_width = 200
+                        tooltip_height = 60
+                        tooltip_x = rect.centerx - tooltip_width // 2
+                        tooltip_y = rect.bottom + 10
+                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
+                        tooltip_queue.append((tooltip_text, tooltip_rect))
+                        tooltip_drawn = True  # ✅ Prevent other tooltips, but keep drawing other boxes
 
-                    tooltip_width = 200
-                    tooltip_height = 80
-                    tooltip_x = rect.centerx - tooltip_width // 2
-                    tooltip_y = rect.bottom + 10
-                    tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
-                    pygame.draw.rect(screen, (30, 30, 60), tooltip_rect, border_radius=6)
-                    lines = tooltip_text.split('\n')
-                    for idx, line in enumerate(lines):
-                        font = pygame.font.SysFont(None, 22)
-                        txt_surf = font.render(line, True, (255, 255, 255))
-                        screen.blit(txt_surf, (tooltip_rect.x + 10, tooltip_rect.y + 8 + idx * 22))
 
-                            # --- Multiplier Upgrade Shop Boxes ---
+                # Move down for the main upgrade list
+                start_y += shop_box_height + -50
+
+               # --- Multiplier Upgrade Shop Boxes ---
                 if state.active_tab == "CP":
                     visible_multipliers = [
                         m for m in state.cp_multipliers
@@ -1363,7 +1351,6 @@ def main():
                 show_tooltip = False
 
                 # === UPGRADE BUTTONS, IMAGES, TEXT ===
-                hover_shop_multiplier = None
                 visible_upgrades = upgrades  # or paginate/slice if needed
                 for i, upg in enumerate(visible_upgrades):
                     y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
@@ -1445,12 +1432,28 @@ def main():
 
                     # === TOOLTIP LOGIC: Only store tooltip values for later drawing ===
                     hover = rect.collidepoint(mouse_pos)
+                    hover_shop_multiplier = None
                     if hover:
-                        hovered_shop_multiplier = (m, rect)
-                if hovered_shop_multiplier:
-                    draw_shop_tooltip(screen, hovered_shop_multiplier[0], hovered_shop_multiplier[1], mouse_pos)
-                elif hovered_upgrade:
-                    draw_upgrade_tooltip(screen, hovered_upgrade[0], hovered_upgrade[1], mouse_pos)
+                        tooltip_text = (
+                            f"{m['name']}\n"
+                            f"Level: {m['level']}\n"
+                            f"Cost: {format_large_number(m['cost'])}\n"
+                            f"Boost: +{int(m['boost_percent'] * 100)}%"
+                        )
+
+                        tooltip_width = 200
+                        tooltip_height = 60
+                        tooltip_x = rect.centerx - tooltip_width // 2
+                        tooltip_y = rect.bottom + 10
+                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
+                        
+                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ store for later
+
+
+                    # === Click Logic ===
+                    if mouse_down and hover and can_buy:
+                        state.buy_upgrade(upg, n_levels)
+                        mouse_down = False
 
 
                 screen.set_clip(None)
