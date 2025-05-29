@@ -15,6 +15,15 @@ FPS = 60
 PRICE_INCREASE = 1.15
 LINEAR_INCREASE = 0.75
 
+
+#loading images relative and not path specific
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+
+SOUND_PATH = os.path.join(ASSETS_DIR, "coinbag.mp3")
+
+#os.path.join(ASSETS_DIR, "pixelpuncher.png")
+
 BG_COLOR = (25, 25, 30)
 LEFT_BG = (40, 40, 50)
 RIGHT_BG = (30, 30, 40)
@@ -95,39 +104,39 @@ def resource_path(relative_path):
 
 # --- Upgrade Data ---
 click_upgrades = [
-    {"name": "Pixel Puncher", "base_cost": 10, "click_power": 0.1, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/fingerstorm.png"},
-    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/thumbstrength.png"},
-    {"name": "Tendon Tornado", "base_cost": 200, "click_power": 0.6, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Infinite Index", "base_cost": 500, "click_power": 0.8, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Carpal Karma", "base_cost": 1000, "click_power": 1.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Mouse Melter", "base_cost": 2500, "click_power": 1.5, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Quantum Click", "base_cost": 5000, "click_power": 2.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Click Titan", "base_cost": 10000, "click_power": 3.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Tap God", "base_cost": 20000, "click_power": 5.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Pixel Puncher", "base_cost": 10, "click_power": 0.1, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "fingerstorm.png")},
+    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "thumbstrength.png")},
+    {"name": "Tendon Tornado", "base_cost": 200, "click_power": 0.6, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Infinite Index", "base_cost": 500, "click_power": 0.8, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Carpal Karma", "base_cost": 1000, "click_power": 1.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Mouse Melter", "base_cost": 2500, "click_power": 1.5, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Quantum Click", "base_cost": 5000, "click_power": 2.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Click Titan", "base_cost": 10000, "click_power": 3.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Tap God", "base_cost": 20000, "click_power": 5.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
 ]
 
 auto_upgrades = [
-    {"name": "Street Sweeper", "base_cost": 50, "cps": 1.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Golden Paws", "base_cost": 200, "cps": 2.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Coin Roomba", "base_cost": 500, "cps": 4.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Bankstorm", "base_cost": 1000, "cps": 6.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Money Magnet", "base_cost": 2500, "cps": 10.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Piggy Pilot", "base_cost": 5000, "cps": 15.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "ATM Army", "base_cost": 10000, "cps": 25.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Cash Cyclone", "base_cost": 20000, "cps": 40.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Cash Overlord", "base_cost": 50000, "cps": 65.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Crypto Kraken", "base_cost": 100000, "cps": 100.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Vault Vortex", "base_cost": 250000, "cps": 160.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Gold Blaster", "base_cost": 500000, "cps": 250.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Coin Geyser", "base_cost": 1000000, "cps": 400.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Cash Comet", "base_cost": 2500000, "cps": 650.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Capital Core", "base_cost": 5000000, "cps": 1000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Bitcoin Barn", "base_cost": 10000000, "cps": 1600.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Compound Farm", "base_cost": 25000000, "cps": 2500.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Money Machine", "base_cost": 50000000, "cps": 4000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "Rich Reactor", "base_cost": 100000000, "cps": 6500.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
-    {"name": "The Moneyverse", "base_cost": 250000000, "cps": 10000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Street Sweeper", "base_cost": 50, "cps": 1.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Golden Paws", "base_cost": 200, "cps": 2.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Coin Roomba", "base_cost": 500, "cps": 4.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Bankstorm", "base_cost": 1000, "cps": 6.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Money Magnet", "base_cost": 2500, "cps": 10.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Piggy Pilot", "base_cost": 5000, "cps": 15.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "ATM Army", "base_cost": 10000, "cps": 25.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Cash Cyclone", "base_cost": 20000, "cps": 40.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Cash Overlord", "base_cost": 50000, "cps": 65.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Crypto Kraken", "base_cost": 100000, "cps": 100.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Vault Vortex", "base_cost": 250000, "cps": 160.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Gold Blaster", "base_cost": 500000, "cps": 250.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Coin Geyser", "base_cost": 1000000, "cps": 400.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Cash Comet", "base_cost": 2500000, "cps": 650.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Capital Core", "base_cost": 5000000, "cps": 1000.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Bitcoin Barn", "base_cost": 10000000, "cps": 1600.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Compound Farm", "base_cost": 25000000, "cps": 2500.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Money Machine", "base_cost": 50000000, "cps": 4000.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "Rich Reactor", "base_cost": 100000000, "cps": 6500.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
+    {"name": "The Moneyverse", "base_cost": 250000000, "cps": 10000.0, "owned": 0, "max_owned": 1000000, "image_path": os.path.join(ASSETS_DIR, "pixelpuncher.png")},
 ]
 
 # If all buildings use the same thresholds, just do:
@@ -491,6 +500,8 @@ def save_game(state):
         "achievement_unlocked_queue": state.achievement_unlocked_queue,
         "current_achievement_popup": state.current_achievement_popup,
         "achievement_popup_time": state.achievement_popup_time,
+        "cp_multipliers": [m["purchased"] for m in state.cp_multipliers],
+        "cps_multipliers": [m["purchased"] for m in state.cps_multipliers],
     }
     with open(SAVE_FILE, "w") as f:
         json.dump(data, f)
@@ -502,21 +513,7 @@ def load_game(state):
     with open(SAVE_FILE, "r") as f:
         data = json.load(f)
 
-    state.coins = data.get("coins", 0)
-    state.all_time_coins = data.get("all_time_coins", 0)
-    state.prestige = data.get("prestige", 0)
-    state.buy_multiplier_index = data.get("buy_multiplier_index", 0)
-    state.total_clicks = data.get("total_clicks", 0)
-    state.click_times = data.get("click_times", [])
-    state.start_time = data.get("start_time", time.time())
-    state.prestige_start_time = data.get("prestige_start_time", time.time())
-    state.coin_bag_shake_enabled = data.get("coin_bag_shake_enabled", True)
-    state.sound_volume = data.get("sound_volume", 5)
-    state.achievement_scroll = data.get("achievement_scroll", 0)
-    state.has_new_achievement = data.get("has_new_achievement", False)
-    state.achievement_unlocked_queue = data.get("achievement_unlocked_queue", [])
-    state.current_achievement_popup = data.get("current_achievement_popup", None)
-    state.achievement_popup_time = data.get("achievement_popup_time", 0)
+    # ... your current loading code ...
 
     # Load click/auto upgrades
     for upg, saved in zip(state.click_upgrades, data.get("click_upgrades", [])):
@@ -525,14 +522,17 @@ def load_game(state):
     for upg, saved in zip(state.auto_upgrades, data.get("auto_upgrades", [])):
         upg["owned"] = saved.get("owned", 0)
 
-    # Load achievements
-    ach_data = data.get("achievements", [])
-    if ach_data and state.achievements:
-        for ach, saved_ach in zip(state.achievements, ach_data):
-            ach.update(saved_ach)
+    # Load shop upgrade purchases 💡
+    cp_purchases = data.get("cp_multipliers", [])
+    cps_purchases = data.get("cps_multipliers", [])
+    for m, purchased in zip(state.cp_multipliers, cp_purchases):
+        m["purchased"] = purchased
+    for m, purchased in zip(state.cps_multipliers, cps_purchases):
+        m["purchased"] = purchased
+
+    # ... achievements, etc ...
 
     return data.get("last_saved_time", 0)
-
 # --- UI Helpers ---
 def draw_text(surface, text, pos, font, color=TEXT_COLOR):
     txt = font.render(text, True, color)
@@ -867,13 +867,13 @@ def main():
     shake_timer = 0
 
     try:
-        coin_image_path = r"C:\Users\Administrator\Documents\test\assets\coin.png"
+        coin_image_path = rplaceholder_path = os.path.join(ASSETS_DIR, "coin.png")
         coin_image_original = pygame.image.load(coin_image_path).convert_alpha()
     except Exception:
         coin_image_original = None
 
     try:
-        coin_sound = pygame.mixer.Sound(r"C:\Users\Administrator\Documents\test\coinbag.mp3")
+        coin_sound = pygame.mixer.Sound(SOUND_PATH)
     except Exception:
         coin_sound = None
 
@@ -1156,7 +1156,7 @@ def main():
                 elif prestige_tab_rect.collidepoint(mouse_pos) and state.active_tab != "PRESTIGE":
                     state.active_tab = "PRESTIGE"
                     state.buy_multiplier_index = 0
-                print("Active tab is now:", state.active_tab)
+               
 
             if state.active_tab in ("CP", "CPS"):
                 upgrades = state.click_upgrades if state.active_tab == "CP" else state.auto_upgrades
@@ -1238,13 +1238,13 @@ def main():
                     image_path = m.get("image_path")
                     if image_path and os.path.exists(image_path):
                         try:
-                            image_to_draw = pygame.image.load(image_path).convert_alpha()
+                            image = pygame.image.load(image_path).convert_alpha()
                         except Exception as e:
                             print(f"Failed to load image for {m['name']}: {e}")
 
                     # Fallback if image is missing or load failed
                     if image_to_draw is None:
-                        placeholder_path = "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"
+                        placeholder_path = os.path.join(ASSETS_DIR, "pixelpuncher.png")
                         if os.path.exists(placeholder_path):
                             try:
                                 image_to_draw = pygame.image.load(placeholder_path).convert_alpha()
@@ -1276,8 +1276,12 @@ def main():
 
                     # TOOLTIP (drawn last)
                     if hover and not tooltip_drawn:
-                        # Draw tooltip
-                        tooltip_text = f"{m['name']}\nCost: {format_large_number(m['cost'])}\n+{int(m['boost_percent'] * 100)}% Boost"
+                        base_name = m['name'].split(' Boost')[0]
+                        tooltip_text = (
+                            f"{m['name']}\n"                  # Ex: "Pixel Puncher Boost Lv 1"
+                            f"Cost: {format_large_number(m['cost'])}\n"  # Ex: "Cost: 12"
+                            f"Boost: +{int(m['boost_percent']*100)}%"    # Ex: "Boost: +2%"
+)
                         tooltip_width = 200
                         tooltip_height = 60
                         tooltip_x = rect.centerx - tooltip_width // 2
@@ -1320,25 +1324,12 @@ def main():
                     can_afford = state.coins >= m["cost"]
                     pygame.draw.rect(screen, HIGHLIGHT_COLOR, rect, 2, border_radius=8)
 
-                    # Label for multiplier upgrade
-                    label = f"+{int(m['boost_percent']*100)}% | Cost: {format_large_number(m['cost'])}"
-
-                    # Draw background, image, flash, overlay, border, etc.
-
                     # Buy logic
                     if mouse_down and hover and can_afford:
                         state.coins -= m["cost"]
                         m["purchased"] = True
                         state.shop_box_flash_timers[i] = pygame.time.get_ticks()
                         mouse_down = False
-
-                    # Draw label if present
-                    if label:
-                        small_font = pygame.font.SysFont(None, 18)
-                        text_surf = small_font.render(label, True, TEXT_COLOR)
-                        text_rect = text_surf.get_rect(center=(rect.centerx, rect.bottom + 12))
-                        screen.blit(text_surf, text_rect)
-
 
                 # Push upgrade list below these boxes
                 start_y += shop_box_height + 10
@@ -1418,8 +1409,8 @@ def main():
                     # === IMAGE ===
                     image_size = rect.height - 10
                     filename = upg["name"].lower().replace(" ", "").replace(":", "") + ".png"
-                    image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/{filename}"
-                    fallback_image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"
+                    image_path = os.path.join(ASSETS_DIR, filename)
+                    fallback_image_path = placeholder_path = os.path.join(ASSETS_DIR, "pixelpuncher.png")
 
                     try:
                         image = pygame.image.load(image_path).convert_alpha() if os.path.exists(image_path) \
