@@ -1351,6 +1351,7 @@ def main():
                 show_tooltip = False
 
                 # === UPGRADE BUTTONS, IMAGES, TEXT ===
+                hover_shop_multiplier = None
                 visible_upgrades = upgrades  # or paginate/slice if needed
                 for i, upg in enumerate(visible_upgrades):
                     y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
@@ -1433,26 +1434,11 @@ def main():
                     # === TOOLTIP LOGIC: Only store tooltip values for later drawing ===
                     hover = rect.collidepoint(mouse_pos)
                     if hover:
-                        tooltip_text = (
-                            f"{m['name']}\n"
-                            f"Level: {m['level']}\n"
-                            f"Cost: {format_large_number(m['cost'])}\n"
-                            f"Boost: +{int(m['boost_percent'] * 100)}%"
-                        )
-
-                        tooltip_width = 200
-                        tooltip_height = 60
-                        tooltip_x = rect.centerx - tooltip_width // 2
-                        tooltip_y = rect.bottom + 10
-                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
-                        
-                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ store for later
-
-
-                    # === Click Logic ===
-                    if mouse_down and hover and can_buy:
-                        state.buy_upgrade(upg, n_levels)
-                        mouse_down = False
+                        hovered_shop_multiplier = (m, rect)
+                if hovered_shop_multiplier:
+                    draw_shop_tooltip(screen, hovered_shop_multiplier[0], hovered_shop_multiplier[1], mouse_pos)
+                elif hovered_upgrade:
+                    draw_upgrade_tooltip(screen, hovered_upgrade[0], hovered_upgrade[1], mouse_pos)
 
 
                 screen.set_clip(None)
