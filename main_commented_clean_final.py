@@ -130,6 +130,10 @@ auto_upgrades = [
     {"name": "The Moneyverse", "base_cost": 250000000, "cps": 10000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
 ]
 
+# If all buildings use the same thresholds, just do:
+standard_requires_owned = [1, 10, 25, 50, 100, 200, 300, 400, 500, 600]
+
+
 # --- Achievement Data ---
 def generate_achievements():
     achievements = []
@@ -265,11 +269,6 @@ class GameState:
         self.achievements = achievements if achievements is not None else []
         self.achievement_scroll = 0
 
-        self.multiplier_upgrades = (
-            generate_multipliers_for_all(self.click_upgrades, "CP") +
-            generate_multipliers_for_all(self.auto_upgrades, "CPS")
-        )
-
         ##Animation when bought timer
         self.shop_box_flash_timers = [0] * 5  # one for each shop box
 
@@ -282,7 +281,7 @@ class GameState:
 
         #Advancemant multipliers
         self.cp_multipliers = generate_multipliers_for_all(self.click_upgrades, "CP")
-        self.cps_multipliers = generate_multipliers_for_all(self.auto_upgrades, "CPS")
+        self.cps_multipliers = cps_multipliers
 
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -299,16 +298,16 @@ class GameState:
         return total
     
     def get_total_multiplier_for_upgrade(self, index, upgrade_type):
-        total_boost = 1.0
+        # Return the sum of purchased boosts for the correct type and index.
         if upgrade_type == "click":
-            for mult in self.cp_multipliers:
-                if mult["associated_upgrade_index"] == index and mult["purchased"]:
-                    total_boost += mult["boost_percent"]
+            multipliers = self.cp_multipliers
         elif upgrade_type == "auto":
-            for mult in self.cps_multipliers:
-                if mult["associated_upgrade_index"] == index and mult["purchased"]:
-                    total_boost += mult["boost_percent"]
-        return total_boost
+            multipliers = self.cps_multipliers
+        else:
+            return 1.0
+
+        boost = sum(m["boost_percent"] for m in multipliers if m["purchased"] and m["associated_upgrade_index"] == index)
+        return 1 + boost
 
     def get_total_cps(self):
         total = 0
@@ -337,12 +336,14 @@ class GameState:
             return True
         return False
     
-    def generate_multiplier_upgrades(base_name, base_type, base_index, base_cost, num_levels=10):
+    def generate_multiplier_upgrades(base_name, base_type, base_index, base_cost, requires_owned_list, num_levels=10):
         upgrades = []
         for i in range(num_levels):
             level = i + 1
             cost = base_cost * (1.15 ** level)
             boost = 0.02 * (1.15 ** level)
+            # Use the value from requires_owned_list, or fallback to level if not provided
+            requires_owned = requires_owned_list[i] if i < len(requires_owned_list) else level
             upgrades.append({
                 "name": f"{base_name} Boost Lv {level}",
                 "associated_upgrade_index": base_index,
@@ -350,9 +351,39 @@ class GameState:
                 "level": level,
                 "cost": round(cost),
                 "boost_percent": round(boost, 4),
-                "purchased": False
+                "purchased": False,
+                "requires_owned": requires_owned
             })
         return upgrades
+    
+    def generate_building_upgrades(upgrade_list, upgrade_type, base_multiplier=10, boost=1.0):
+        all_multipliers = []
+        unlocks = [1, 5, 25, 50, 100, 200, 300]  # Milestone unlocks
+        for idx, upg in enumerate(upgrade_list):
+            base_name = upg["name"]
+            base_cost = upg["base_cost_initial"] if "base_cost_initial" in upg else upg["base_cost"]
+            for tier, owned_required in enumerate(unlocks):
+                cost = int(base_cost * (base_multiplier ** (tier + 1)))
+                all_multipliers.append({
+                    "name": f"{base_name} Boost Lv {tier+1}",
+                    "associated_upgrade_index": idx,
+                    "type": upgrade_type,
+                    "level": tier + 1,
+                    "cost": cost,
+                    "boost_percent": boost,  # +100%
+                    "purchased": False,
+                    "requires_owned": owned_required,
+                    "image_path": f"C:/Users/Administrator/Documents/Coin Game/assets/{base_name.lower().replace(' ', '').replace(':', '')}.png"
+                })
+        return all_multipliers
+    
+    for idx, upg in enumerate(auto_upgrades):
+        cps_multipliers.extend(
+            generate_multiplier_upgrades(
+                upg["name"], "CPS", idx, upg["base_cost"], standard_requires_owned
+            )
+        )
+
 
     def calculate_cost(self, base_cost, level):
         return int(base_cost * (PRICE_INCREASE ** level) * (1 + LINEAR_INCREASE * level))
@@ -1120,11 +1151,16 @@ def main():
                 upgrades = state.click_upgrades if state.active_tab == "CP" else state.auto_upgrades
                 start_y = tab_y + tab_height + 20
 
-                # --- Multiplier Upgrade Shop Boxes ---
-                is_cp = state.active_tab == "CP"
-                multipliers = state.cp_multipliers if is_cp else state.cps_multipliers
+                # 1. Assign active_multipliers based on tab
+                if state.active_tab == "CP":
+                    active_multipliers = [m for m in state.cp_multipliers if not m["purchased"]]
+                    upgrade_type = "click"
+                else:
+                    active_multipliers = [m for m in state.cps_multipliers if not m["purchased"]]
+                    upgrade_type = "auto"
 
-                visible_multipliers = [m for m in multipliers if not m["purchased"]][:5]
+                # 2. Only after assignment, you can slice and use it
+                visible_multipliers = active_multipliers[:5]
                 shop_box_count = 5
                 shop_box_margin = 20
                 shop_box_gap = 20
@@ -1132,13 +1168,13 @@ def main():
                 shop_box_y = start_y
                 shop_content_width = right_width - 2 * shop_box_margin
                 shop_box_width = int((shop_content_width - (shop_box_count - 1) * shop_box_gap) / shop_box_count)
-                
-                #tooltip_drawn = False
 
-                sorted_multipliers = sorted(
-                    [m for m in active_multipliers if not m["purchased"]],
-                    key=lambda m: m["cost"]
-                )
+                tooltip_drawn = False
+
+                for i, m in enumerate(visible_multipliers):
+                    # draw, flash, handle buy, etc.
+                    pass
+
                 from collections import defaultdict
 
                 # Group upgrades by base name (e.g., Pixel Puncher, Fingerstorm)
@@ -1231,60 +1267,37 @@ def main():
                 # Move down for the main upgrade list
                 start_y += shop_box_height + -50
 
+               # --- Multiplier Upgrade Shop Boxes ---
                 if state.active_tab == "CP":
-                    all_multipliers = state.click_multiplier_upgrades
+                    active_multipliers = [m for m in state.cp_multipliers if not m["purchased"]]
                     upgrade_type = "click"
                 elif state.active_tab == "CPS":
-                    all_multipliers = state.auto_multiplier_upgrades
+                    active_multipliers = [m for m in state.cps_multipliers if not m["purchased"]]
                     upgrade_type = "auto"
                 else:
-                    all_multipliers = []
+                    active_multipliers = []
                     upgrade_type = None
 
-                # Filter out purchased and limit to shop_box_count
-                active_multipliers = [m for m in all_multipliers if not m["purchased"]][:shop_box_count]
+                visible_multipliers = active_multipliers[:5]  # Up to 5 unpurchased multipliers
 
-                for i, m in enumerate(active_multipliers):
+                for i, m in enumerate(visible_multipliers):
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
-
-                    # Draw the shop box border
+                    hover = rect.collidepoint(mouse_pos)
+                    can_afford = state.coins >= m["cost"]
                     pygame.draw.rect(screen, HIGHLIGHT_COLOR, rect, 2, border_radius=8)
 
-                    # FLASH EFFECT ON PURCHASE
-                    if i < len(state.shop_box_flash_timers):
-                        time_since_flash = pygame.time.get_ticks() - state.shop_box_flash_timers[i]
-                        flash_duration = 300  # milliseconds
-                        if 0 < time_since_flash < flash_duration:
-                            alpha = 255 - int((time_since_flash / flash_duration) * 255)
-                            flash_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-                            flash_surface.fill((255, 255, 100, alpha))  # Yellow flash overlay
-                            screen.blit(flash_surface, rect.topleft)
+                    # Label for multiplier upgrade
+                    label = f"+{int(m['boost_percent']*100)}% | Cost: {format_large_number(m['cost'])}"
 
-                    # Set default label
-                    label = ""
+                    # Draw background, image, flash, overlay, border, etc.
 
-                    # Assign the correct upgrade object
-                    if upgrade_type == "click":
-                        if i < len(state.click_upgrades):
-                            m = state.click_upgrades[i]
-                            multiplier = state.get_total_multiplier_for_upgrade(i, "click")
-                            total_cp = round(m["click_power"] * m["owned"] * multiplier, 2)
-                            
-                        else:
-                            continue
-
-                    elif upgrade_type == "auto":
-                        if i < len(state.auto_upgrades):
-                            m = state.auto_upgrades[i]
-                            multiplier = state.get_total_multiplier_for_upgrade(i, "auto")
-                            total_cps = round(m["cps"] * m["owned"] * multiplier, 2)
-                           
-                        else:
-                            continue
-
-                    # Draw the border
-                    pygame.draw.rect(screen, HIGHLIGHT_COLOR, rect, 2, border_radius=8)
+                    # Buy logic
+                    if mouse_down and hover and can_afford:
+                        state.coins -= m["cost"]
+                        m["purchased"] = True
+                        state.shop_box_flash_timers[i] = pygame.time.get_ticks()
+                        mouse_down = False
 
                     # Draw label if present
                     if label:
@@ -1292,6 +1305,7 @@ def main():
                         text_surf = small_font.render(label, True, TEXT_COLOR)
                         text_rect = text_surf.get_rect(center=(rect.centerx, rect.bottom + 12))
                         screen.blit(text_surf, text_rect)
+
 
                 # Push upgrade list below these boxes
                 start_y += shop_box_height + 10
@@ -1321,11 +1335,10 @@ def main():
                     label = ""
                     if state.active_tab == "CP":
                         multiplier = state.get_total_multiplier_for_upgrade(i, "click")
-                        total_cp = round(m["click_power"] * m["owned"] * multiplier, 2)
-                        
+                        total_cp = round(upg["click_power"] * upg["owned"] * multiplier, 2)
                     elif state.active_tab == "CPS":
                         multiplier = state.get_total_multiplier_for_upgrade(i, "auto")
-                        total_cps = round(m["cps"] * m["owned"] * multiplier, 2)
+                        total_cps = round(upg["cps"] * upg["owned"] * multiplier, 2)
                         
 
                     if label:
