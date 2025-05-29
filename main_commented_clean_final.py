@@ -1114,6 +1114,7 @@ def main():
                 elif prestige_tab_rect.collidepoint(mouse_pos) and state.active_tab != "PRESTIGE":
                     state.active_tab = "PRESTIGE"
                     state.buy_multiplier_index = 0
+                print("Active tab is now:", state.active_tab)
 
             if state.active_tab in ("CP", "CPS"):
                 upgrades = state.click_upgrades if state.active_tab == "CP" else state.auto_upgrades
@@ -1135,7 +1136,7 @@ def main():
                 #tooltip_drawn = False
 
                 sorted_multipliers = sorted(
-                    [m for m in state.multiplier_upgrades if not m["purchased"]],
+                    [m for m in active_multipliers if not m["purchased"]],
                     key=lambda m: m["cost"]
                 )
                 from collections import defaultdict
@@ -1144,7 +1145,7 @@ def main():
                 tooltip_text = None
                 tooltip_rect = None
                 grouped = defaultdict(list)
-                for m in state.multiplier_upgrades:
+                for m in active_multipliers:
                     if not m["purchased"]:
                         base_name = m["name"].split(" Boost")[0]
                         grouped[base_name].append(m)
@@ -1211,6 +1212,7 @@ def main():
                     if mouse_down and hover and can_afford:
                         state.coins -= m["cost"]
                         m["purchased"] = True
+                        state.shop_box_flash_timers[i] = pygame.time.get_ticks()  # ← trigger flash
                         mouse_down = False
 
                     # TOOLTIP (drawn last)
@@ -1230,13 +1232,19 @@ def main():
                 start_y += shop_box_height + -50
 
                 if state.active_tab == "CP":
+                    all_multipliers = state.click_multiplier_upgrades
                     upgrade_type = "click"
                 elif state.active_tab == "CPS":
+                    all_multipliers = state.auto_multiplier_upgrades
                     upgrade_type = "auto"
                 else:
+                    all_multipliers = []
                     upgrade_type = None
 
-                for i in range(shop_box_count):
+                # Filter out purchased and limit to shop_box_count
+                active_multipliers = [m for m in all_multipliers if not m["purchased"]][:shop_box_count]
+
+                for i, m in enumerate(active_multipliers):
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
 
