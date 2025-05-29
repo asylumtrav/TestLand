@@ -1280,16 +1280,25 @@ def main():
 
                # --- Multiplier Upgrade Shop Boxes ---
                 if state.active_tab == "CP":
-                    active_multipliers = [m for m in state.cp_multipliers if not m["purchased"]]
-                    upgrade_type = "click"
+                    visible_multipliers = [
+                        m for m in state.cp_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.click_upgrades)
+                            and state.click_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
                 elif state.active_tab == "CPS":
-                    active_multipliers = [m for m in state.cps_multipliers if not m["purchased"]]
-                    upgrade_type = "auto"
+                    visible_multipliers = [
+                        m for m in state.cps_multipliers
+                        if (
+                            not m["purchased"]
+                            and m["associated_upgrade_index"] < len(state.auto_upgrades)
+                            and state.auto_upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                        )
+                    ][:5]
                 else:
-                    active_multipliers = []
-                    upgrade_type = None
-
-                visible_multipliers = active_multipliers[:5]
+                    visible_multipliers = []
 
 
                 for i, m in enumerate(visible_multipliers):
