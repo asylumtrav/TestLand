@@ -152,13 +152,21 @@ def generate_multiplier_upgrades(base_name, base_type, base_index, base_cost, re
         })
     return upgrades
 
-    cps_multipliers = []
-    for idx, upg in enumerate(auto_upgrades):
-        cps_multipliers.extend(
-            generate_multiplier_upgrades(
-                upg["name"], "CPS", idx, upg["base_cost"], standard_requires_owned, num_levels=len(standard_requires_owned)
-            )
+cps_multipliers = []
+for idx, upg in enumerate(auto_upgrades):
+    cps_multipliers.extend(
+        generate_multiplier_upgrades(
+            upg["name"], "CPS", idx, upg["base_cost"], standard_requires_owned, num_levels=len(standard_requires_owned)
         )
+    )
+
+cp_multipliers = []
+for idx, upg in enumerate(click_upgrades):
+    cp_multipliers.extend(
+        generate_multiplier_upgrades(
+            upg["name"], "CP", idx, upg["base_cost"], standard_requires_owned, num_levels=len(standard_requires_owned)
+        )
+    )
 
 # --- Achievement Data ---
 def generate_achievements():
@@ -283,7 +291,7 @@ class GameState:
         self.has_new_achievement = False  # for notification dot
 
         #Advancemant multipliers
-        self.cp_multipliers = generate_multipliers_for_all(self.click_upgrades, "CP")
+        self.cp_multipliers =cp_multipliers
         self.cps_multipliers = cps_multipliers
 
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -1281,7 +1289,8 @@ def main():
                     active_multipliers = []
                     upgrade_type = None
 
-                visible_multipliers = active_multipliers[:5]  # Up to 5 unpurchased multipliers
+                visible_multipliers = active_multipliers[:5]
+
 
                 for i, m in enumerate(visible_multipliers):
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
