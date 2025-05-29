@@ -32,6 +32,7 @@ ACHIEVEMENT_MENU_BORDER = (90, 130, 190)
 
 MULTIPLIERS = [1, 3, 5, 'max']
 
+
 # --- Large Number Formatter ---
 def format_large_number(n):
     if n < 1000:
@@ -83,48 +84,50 @@ def calculate_prestige_level(all_time_coins, current_prestige):
     return max(0, n - current_prestige)
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and PyInstaller """
     try:
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+        base_path = os.path.abspath(os.path.dirname(__file__))
+    full_path = os.path.join(base_path, relative_path)
+    print(f"Resolved path: {full_path}")
+    return full_path
+
 
 # --- Upgrade Data ---
 click_upgrades = [
-    {"name": "Pixel Puncher", "base_cost": 10, "click_power": 0.1, "owned": 0, "max_owned": 1000000},
-    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000},
-    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000},
-    {"name": "Tendon Tornado", "base_cost": 200, "click_power": 0.6, "owned": 0, "max_owned": 1000000},
-    {"name": "Infinite Index", "base_cost": 500, "click_power": 0.8, "owned": 0, "max_owned": 1000000},
-    {"name": "Carpal Karma", "base_cost": 1000, "click_power": 1.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Mouse Melter", "base_cost": 2500, "click_power": 1.5, "owned": 0, "max_owned": 1000000},
-    {"name": "Quantum Click", "base_cost": 5000, "click_power": 2.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Click Titan", "base_cost": 10000, "click_power": 3.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Tap God", "base_cost": 20000, "click_power": 5.0, "owned": 0, "max_owned": 1000000},
+    {"name": "Pixel Puncher", "base_cost": 10, "click_power": 0.1, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Fingerstorm", "base_cost": 25, "click_power": 0.2, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Thumb Strength", "base_cost": 75, "click_power": 0.4, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Tendon Tornado", "base_cost": 200, "click_power": 0.6, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Infinite Index", "base_cost": 500, "click_power": 0.8, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Carpal Karma", "base_cost": 1000, "click_power": 1.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Mouse Melter", "base_cost": 2500, "click_power": 1.5, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Quantum Click", "base_cost": 5000, "click_power": 2.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Click Titan", "base_cost": 10000, "click_power": 3.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Tap God", "base_cost": 20000, "click_power": 5.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
 ]
 
 auto_upgrades = [
-    {"name": "Street Sweeper", "base_cost": 50, "cps": 1.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Golden Paws", "base_cost": 200, "cps": 2.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Coin Roomba", "base_cost": 500, "cps": 4.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Bankstorm", "base_cost": 1000, "cps": 6.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Money Magnet", "base_cost": 2500, "cps": 10.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Piggy Pilot", "base_cost": 5000, "cps": 15.0, "owned": 0, "max_owned": 1000000},
-    {"name": "ATM Army", "base_cost": 10000, "cps": 25.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Cash Cyclone", "base_cost": 20000, "cps": 40.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Cash Overlord", "base_cost": 50000, "cps": 65.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Crypto Kraken", "base_cost": 100000, "cps": 100.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Vault Vortex", "base_cost": 250000, "cps": 160.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Gold Blaster", "base_cost": 500000, "cps": 250.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Coin Geyser", "base_cost": 1000000, "cps": 400.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Cash Comet", "base_cost": 2500000, "cps": 650.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Capital Core", "base_cost": 5000000, "cps": 1000.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Bitcoin Barn", "base_cost": 10000000, "cps": 1600.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Compound Farm", "base_cost": 25000000, "cps": 2500.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Money Machine", "base_cost": 50000000, "cps": 4000.0, "owned": 0, "max_owned": 1000000},
-    {"name": "Rich Reactor", "base_cost": 100000000, "cps": 6500.0, "owned": 0, "max_owned": 1000000},
-    {"name": "The Moneyverse", "base_cost": 250000000, "cps": 10000.0, "owned": 0, "max_owned": 1000000},
+    {"name": "Street Sweeper", "base_cost": 50, "cps": 1.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Golden Paws", "base_cost": 200, "cps": 2.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Coin Roomba", "base_cost": 500, "cps": 4.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Bankstorm", "base_cost": 1000, "cps": 6.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Money Magnet", "base_cost": 2500, "cps": 10.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Piggy Pilot", "base_cost": 5000, "cps": 15.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "ATM Army", "base_cost": 10000, "cps": 25.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Cash Cyclone", "base_cost": 20000, "cps": 40.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Cash Overlord", "base_cost": 50000, "cps": 65.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Crypto Kraken", "base_cost": 100000, "cps": 100.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Vault Vortex", "base_cost": 250000, "cps": 160.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Gold Blaster", "base_cost": 500000, "cps": 250.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Coin Geyser", "base_cost": 1000000, "cps": 400.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Cash Comet", "base_cost": 2500000, "cps": 650.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Capital Core", "base_cost": 5000000, "cps": 1000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Bitcoin Barn", "base_cost": 10000000, "cps": 1600.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Compound Farm", "base_cost": 25000000, "cps": 2500.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Money Machine", "base_cost": 50000000, "cps": 4000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "Rich Reactor", "base_cost": 100000000, "cps": 6500.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
+    {"name": "The Moneyverse", "base_cost": 250000000, "cps": 10000.0, "owned": 0, "max_owned": 1000000, "image_path": "C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"},
 ]
 
 # --- Achievement Data ---
@@ -184,9 +187,8 @@ def generate_multipliers_for_all(upgrade_list, upgrade_type):
     all_multipliers = []
     for index, upgrade in enumerate(upgrade_list):
         base_name = upgrade["name"]
-        base_cost = upgrade["base_cost"] if "base_cost" in upgrade else upgrade["base_cost_initial"]
-        filename = base_name.lower().replace(" ", "").replace(":", "") + ".png"  # sanitize filename
-
+        base_cost = upgrade.get("base_cost", upgrade.get("base_cost_initial", 10))
+        filename = base_name.lower().replace(" ", "").replace(":", "") + ".png"
         image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/{filename}"
 
         for level in range(1, 51):
@@ -203,6 +205,7 @@ def generate_multipliers_for_all(upgrade_list, upgrade_type):
                 "image_path": image_path
             })
     return all_multipliers
+
 
     # All-time money achievements (category: 'money')
     money_goals = [
@@ -262,6 +265,11 @@ class GameState:
         self.achievements = achievements if achievements is not None else []
         self.achievement_scroll = 0
 
+        self.multiplier_upgrades = (
+            generate_multipliers_for_all(self.click_upgrades, "CP") +
+            generate_multipliers_for_all(self.auto_upgrades, "CPS")
+        )
+
         # New for notification popup
         self.achievement_unlocked_queue = []  # queue of achievement names to announce
         self.achievement_popup_time = 0
@@ -272,6 +280,8 @@ class GameState:
         #Advancemant multipliers
         self.cp_multipliers = generate_multipliers_for_all(self.click_upgrades, "CP")
         self.cps_multipliers = generate_multipliers_for_all(self.auto_upgrades, "CPS")
+
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     def get_total_click_power(self):
         total = self.base_click_power
@@ -764,7 +774,7 @@ def main():
     window_width, window_height = INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT
     screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
     pygame.display.set_caption("Coin Clicker")
-    icon_path = resource_path("assets/icon.ico")  # adjust path to your icon file relative to project root or exe
+    icon_path = resource_path("assets\icon.ico")  # adjust path to your icon file relative to project root or exe
     try:
         icon_surface = pygame.image.load(icon_path)
         pygame.display.set_icon(icon_surface)
@@ -890,8 +900,13 @@ def main():
         coin_pos = (left_width // 2, window_height // 2)
 
         screen.fill(BG_COLOR)
+
+        # Draw left panel background
         pygame.draw.rect(screen, LEFT_BG, (0, 0, left_width, window_height))
+
+        # Draw right panel background
         pygame.draw.rect(screen, RIGHT_BG, (left_width, 0, right_width, window_height))
+
 
         if shake_timer > 0 and state.coin_bag_shake_enabled:
             offset_x = random.randint(-5, 5)
@@ -1074,83 +1089,105 @@ def main():
                 shop_box_y = start_y
                 shop_content_width = right_width - 2 * shop_box_margin
                 shop_box_width = int((shop_content_width - (shop_box_count - 1) * shop_box_gap) / shop_box_count)
+                
+                tooltip_drawn = False
+
+                sorted_multipliers = sorted(
+                    [m for m in state.multiplier_upgrades if not m["purchased"]],
+                    key=lambda m: m["cost"]
+                )
+                from collections import defaultdict
+
+                # Group upgrades by base name (e.g., Pixel Puncher, Fingerstorm)
+                tooltip_text = None
+                tooltip_rect = None
+                grouped = defaultdict(list)
+                for m in state.multiplier_upgrades:
+                    if not m["purchased"]:
+                        base_name = m["name"].split(" Boost")[0]
+                        grouped[base_name].append(m)
+
+                # Get the cheapest upgrade from each group
+                cheapest_per_type = [min(group, key=lambda x: x["cost"]) for group in grouped.values()]
+
+                # Sort those by cost and select the top 5
+                visible_multipliers = sorted(cheapest_per_type, key=lambda m: m["cost"])[:5]
 
                 for i, m in enumerate(visible_multipliers):
+
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
                     hover = rect.collidepoint(mouse_pos)
-
                     can_afford = state.coins >= m["cost"]
-                    
-                    ## --- Draw Image from Path for upgrades---
+
+                    # FIRST: draw background box BEFORE image
+                    # 1. Draw the shop box background
+                    pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=8)
+
+                    # 2. Draw the image
                     image_path = m.get("image_path")
                     if image_path and os.path.isfile(image_path):
                         try:
                             image = pygame.image.load(image_path).convert_alpha()
                             image = pygame.transform.smoothscale(image, (rect.width, rect.height))
                             screen.blit(image, rect.topleft)
-                        except pygame.error as e:
-                            print(f"Failed to load image: {image_path} — {e}")
-                            pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=10)
-                    else:
-                        print(f"Missing or invalid image_path in: {m['name']}")
-                        print("Image path:", image_path)
-                        pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=10)
+                        except Exception as e:
+                            print(f"Failed to load image for: {m['name']} — {e}")
 
-                    # --- Optional dark overlay if unaffordable ---
+                    # 3. Draw highlight/border
+                    pygame.draw.rect(screen, HIGHLIGHT_COLOR, rect, 2, border_radius=8)
+
+                    # DRAW IMAGE on top of the background
+                    image_rendered = False
+                    image_path = m.get("image_path")
+                    if image_path and os.path.isfile(image_path):
+                        try:
+                            image = pygame.image.load(image_path).convert_alpha()
+                            image = pygame.transform.smoothscale(image, (rect.width, rect.height))
+                            screen.blit(image, rect.topleft)
+                            image_rendered = True
+                        except Exception as e:
+                            print(f"Image failed to load: {image_path} — {e}")
+
+                    if not image_rendered:
+                        fallback_font = pygame.font.SysFont(None, 20)
+                        text_surf = fallback_font.render(m["name"], True, (255, 255, 255))
+                        text_rect = text_surf.get_rect(center=rect.center)
+                        screen.blit(text_surf, text_rect)
+
+                    # OVERLAY if too expensive
                     if not can_afford:
                         overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-                        overlay.fill((0, 0, 0, 100))  # semi-transparent dark
+                        overlay.fill((0, 0, 0, 100))
                         screen.blit(overlay, rect.topleft)
 
-                    # --- Tooltip on hover ---
-                    for i, m in enumerate(visible_multipliers):
-                        box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
-                        rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
-                        hover = rect.collidepoint(mouse_pos)
+                    # HANDLE BUY
+                    if mouse_down and hover and can_afford:
+                        state.coins -= m["cost"]
+                        m["purchased"] = True
+                        mouse_down = False
 
-                        can_afford = state.coins >= m["cost"]
+                    # TOOLTIP (drawn last)
+                    if hover and not tooltip_drawn:
+                        # Draw tooltip
+                        tooltip_text = f"{m['name']}\nCost: {format_large_number(m['cost'])}\n+{int(m['boost_percent'] * 100)}% Boost"
+                        tooltip_width = 200
+                        tooltip_height = 60
+                        tooltip_x = rect.centerx - tooltip_width // 2
+                        tooltip_y = rect.bottom + 10
+                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
+                        tooltip_queue.append((tooltip_text, tooltip_rect))
+                        tooltip_drawn = True  # ✅ Prevent other tooltips, but keep drawing other boxes
 
-                        # --- Draw image ---
-                        image = pygame.image.load("C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png")
-                        image = pygame.transform.smoothscale(image, (rect.width, rect.height))
-                        screen.blit(image, rect.topleft)
-
-                        if not can_afford:
-                            overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-                            overlay.fill((0, 0, 0, 100))
-                            screen.blit(overlay, rect.topleft)
-
-                        if mouse_down and hover and can_afford:
-                            state.coins -= m["cost"]
-                            m["purchased"] = True
-                            mouse_down = False
-                    for i, m in enumerate(visible_multipliers):
-                        box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
-                        rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
-
-                        if rect.collidepoint(mouse_pos):
-                            tooltip_text = f"{m['name']}\nCost: {format_large_number(m['cost'])}\n+{int(m['boost_percent'] * 100)}% Boost"
-                            tooltip_width = 200
-                            tooltip_height = 60
-                            tooltip_x = rect.centerx - tooltip_width // 2
-                            tooltip_y = rect.bottom + 10
-
-                            tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
-                            pygame.draw.rect(screen, (30, 30, 30), tooltip_rect, border_radius=8)
-                            pygame.draw.rect(screen, HIGHLIGHT_COLOR, tooltip_rect, 2, border_radius=8)
-
-                            draw_multiline_text_in_rect(screen, tooltip_text, tooltip_rect, FONT, TEXT_COLOR)
-                            break  # Only show one tooltip
 
                 # Move down for the main upgrade list
-                start_y += shop_box_height + 20
+                start_y += shop_box_height + - 50
 
 
                 for i in range(shop_box_count):
                     box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
                     rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
-                    pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=8)
+                    #pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=8)
                     pygame.draw.rect(screen, HIGHLIGHT_COLOR, rect, 2, border_radius=8)
 
                 # Push upgrade list below these boxes
@@ -1167,37 +1204,76 @@ def main():
                 clip_rect = pygame.Rect(left_width, start_y, right_width, visible_height)
                 screen.set_clip(clip_rect)
 
-                for i, upg in enumerate(upgrades):
+
+                tooltip_text = None
+                tooltip_rect = None
+                show_tooltip = False
+
+                # === UPGRADE BUTTONS, IMAGES, TEXT ===
+                visible_upgrades = upgrades  # or paginate/slice if needed
+                tooltip_queue = []  # ← clear tooltip queue before upgrades are drawn
+                for i, upg in enumerate(visible_upgrades):
                     y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
                     rect = pygame.Rect(left_width + 20, y, right_width - 40, upgrade_height)
                     hover = rect.collidepoint(mouse_pos)
 
                     multi = MULTIPLIERS[state.buy_multiplier_index]
-                    if multi == 'max':
-                        n_levels = state.max_affordable_levels(upg)
-                    else:
-                        n_levels = multi
-
+                    n_levels = state.max_affordable_levels(upg) if multi == 'max' else multi
                     total_cost = state.calculate_multi_cost(upg, n_levels) if n_levels > 0 else 0
                     total_gain = state.calculate_multi_gain(upg, n_levels)
-
                     can_buy = state.can_buy_upgrade(upg, n_levels) and n_levels > 0
 
                     display_cost = format_large_number(total_cost)
-                    if state.active_tab == "CP":
-                        display_gain = f"CP +{int(round(total_gain))}"
-                    else:
-                        display_gain = f"CPS +{format_large_number(total_gain)}"
+                    display_gain = (
+                        f"CP +{int(round(total_gain))}" if state.active_tab == "CP"
+                        else f"CPS +{format_large_number(total_gain)}"
+                    )
+                    upgrade_text = f"{upg['name']} | Cost: {display_cost} | Owned: {upg['owned']} | {display_gain}"
 
                     draw_button(screen, rect, enabled=can_buy, hover=hover)
 
-                    upgrade_text = f"{upg['name']} | Cost: {display_cost} | Owned: {upg['owned']} | {display_gain}"
+                    # === IMAGE ===
+                    image_size = rect.height - 10
+                    filename = upg["name"].lower().replace(" ", "").replace(":", "") + ".png"
+                    image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/{filename}"
+                    fallback_image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"
 
-                    draw_multiline_text_in_rect(screen, upgrade_text, rect, FONT, TEXT_COLOR)
+                    try:
+                        image = pygame.image.load(image_path).convert_alpha() if os.path.exists(image_path) \
+                                else pygame.image.load(fallback_image_path).convert_alpha()
+                        image = pygame.transform.smoothscale(image, (image_size, image_size))
+                        image_pos = (rect.x + 5, rect.y + (rect.height - image_size) // 2)
+                        screen.blit(image, image_pos)
+                    except Exception as e:
+                        print(f"Image load fail for {upg['name']}: {e}")
 
+                    # === TEXT (right of image) ===
+                    text_x = rect.x + image_size + 15
+                    text_width = rect.width - image_size - 20
+                    text_rect = pygame.Rect(text_x, rect.y, text_width, rect.height)
+                    draw_multiline_text_in_rect(screen, upgrade_text, text_rect, FONT, TEXT_COLOR)
+
+                    # === TOOLTIP LOGIC: Only store tooltip values for later drawing ===
+                    if hover:
+                        tooltip_text = (
+                            f"{upg['name']}\n"
+                            f"Cost: {format_large_number(upg['base_cost'])}\n"
+                            f"+{int(upg.get('click_power', upg.get('cps', 0)))} Power"
+                        )
+                        tooltip_width = 200
+                        tooltip_height = 60
+                        tooltip_x = rect.centerx - tooltip_width // 2
+                        tooltip_y = rect.bottom + 10
+                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
+
+                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ Only append
+
+
+                    # === Click Logic ===
                     if mouse_down and hover and can_buy:
                         state.buy_upgrade(upg, n_levels)
                         mouse_down = False
+
 
                 screen.set_clip(None)
 
@@ -1235,6 +1311,7 @@ def main():
 
             elif state.active_tab == "PRESTIGE":
                 pygame.draw.rect(screen, RIGHT_BG, (left_width, 0, right_width, window_height))
+                pygame.draw.rect(screen, LEFT_BG, (0, 0, left_width, window_height))
                 title_font = pygame.font.SysFont(None, max(36, int(40 * window_height / INITIAL_WINDOW_HEIGHT)))
                 label_font = pygame.font.SysFont(None, max(24, int(28 * window_height / INITIAL_WINDOW_HEIGHT)))
 
@@ -1352,7 +1429,38 @@ def main():
             elif settings_rect.collidepoint(mouse_pos):
                 showing_settings = True
                 mouse_down = False
-       
+        screen.set_clip(None)
+        screen.set_clip(None)
+        for tip_text, tip_rect in tooltip_queue:
+            if isinstance(tip_rect, pygame.Rect):
+                pygame.draw.rect(screen, (30, 30, 30), tip_rect, border_radius=8)
+                pygame.draw.rect(screen, HIGHLIGHT_COLOR, tip_rect, 2, border_radius=8)
+                draw_multiline_text_in_rect(screen, tip_text, tip_rect, FONT, TEXT_COLOR)
+            else:
+                print("Invalid tooltip_rect:", tip_rect)
+
+        # Always draw achievements last
+        draw_achievement_popup(screen, state, window_width, FONT)
+        screen.set_clip(None)
+        for tip_text, tip_rect in tooltip_queue:
+            try:
+                if isinstance(tip_rect, pygame.Rect):
+                    screen.set_clip(None)
+                    pygame.draw.rect(screen, (30, 30, 30), tip_rect, border_radius=8)
+                    pygame.draw.rect(screen, HIGHLIGHT_COLOR, tip_rect, 2, border_radius=8)
+                    draw_multiline_text_in_rect(screen, tip_text, tip_rect, FONT, TEXT_COLOR)
+            except Exception as e:
+                print(f"Tooltip render error: {e} with rect: {tip_rect}")
+            
+        for tip_text, tip_rect in tooltip_queue:
+            if isinstance(tip_rect, pygame.Rect):
+                screen.set_clip(None)
+                pygame.draw.rect(screen, (30, 30, 30), tip_rect, border_radius=8)
+                pygame.draw.rect(screen, HIGHLIGHT_COLOR, tip_rect, 2, border_radius=8)
+                draw_multiline_text_in_rect(screen, tip_text, tip_rect, FONT, TEXT_COLOR)
+
+                
+        
         pygame.display.flip()
 
         shake_timer = max(0, shake_timer - dt)
