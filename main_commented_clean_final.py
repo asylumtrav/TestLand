@@ -1432,15 +1432,12 @@ def main():
 
                     # === TOOLTIP LOGIC: Only store tooltip values for later drawing ===
                     hover = rect.collidepoint(mouse_pos)
-                    hover_shop_multiplier = None
                     if hover:
                         tooltip_text = (
-                            f"{m['name']}\n"
-                            f"Level: {m['level']}\n"
-                            f"Cost: {format_large_number(m['cost'])}\n"
-                            f"Boost: +{int(m['boost_percent'] * 100)}%"
+                            f"{upg['name']}\n"
+                            f"Cost: {format_large_number(upg['base_cost'])}\n"
+                            f"+{int(upg.get('click_power', upg.get('cps', 0)))} Power"
                         )
-
                         tooltip_width = 200
                         tooltip_height = 60
                         tooltip_x = rect.centerx - tooltip_width // 2

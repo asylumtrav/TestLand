@@ -1304,111 +1304,168 @@ def main():
                 tooltip_rect = None
                 show_tooltip = False
 
-                # === UPGRADE BUTTONS, IMAGES, TEXT ===
-                visible_upgrades = upgrades  # or paginate/slice if needed
-                for i, upg in enumerate(visible_upgrades):
-                    y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
-                    rect = pygame.Rect(left_width + 20, y, right_width - 40, upgrade_height)
-                    hover = rect.collidepoint(mouse_pos)
-                    label = ""
-                    if state.active_tab == "CP":
-                        multiplier = state.get_total_multiplier_for_upgrade(i, "click")
-                        total_cp = round(m["click_power"] * m["owned"] * multiplier, 2)
-                        
-                    elif state.active_tab == "CPS":
-                        multiplier = state.get_total_multiplier_for_upgrade(i, "auto")
-                        total_cps = round(m["cps"] * m["owned"] * multiplier, 2)
-                        
+                # --- UPGRADE/SHOP PANEL (CP/CPS TABS) ---
 
-                    if label:
-                        small_font = pygame.font.SysFont(None, 18)
-                        text_surf = small_font.render(label, True, TEXT_COLOR)
-                        text_rect = text_surf.get_rect(center=(rect.centerx, rect.bottom + 12))
-                        screen.blit(text_surf, text_rect)
-                    if hover:
-                        hover = rect.collidepoint(mouse_pos)
-
-                    multi = MULTIPLIERS[state.buy_multiplier_index]
-                    n_levels = state.max_affordable_levels(upg) if multi == 'max' else multi
-                    total_cost = state.calculate_multi_cost(upg, n_levels) if n_levels > 0 else 0
-                    total_gain = state.calculate_multi_gain(upg, n_levels)
-                    can_buy = state.can_buy_upgrade(upg, n_levels) and n_levels > 0
-
-                    display_cost = format_large_number(total_cost)
-                    display_gain = (
-                        f"CP +{int(round(total_gain))}" if state.active_tab == "CP"
-                        else f"CPS +{format_large_number(total_gain)}"
+            # Set up visible upgrades and multipliers based on current tab
+            if state.active_tab == "CP":
+                upgrades = state.click_upgrades
+                multipliers = [
+                    m for m in state.cp_multipliers
+                    if (
+                        not m.get("purchased", False)
+                        and m["associated_upgrade_index"] < len(upgrades)
+                        and upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
                     )
-                    # Build multiline upgrade text for inside button
-                    lines = []
+                ]
+            elif state.active_tab == "CPS":
+                upgrades = state.auto_upgrades
+                multipliers = [
+                    m for m in state.cps_multipliers
+                    if (
+                        not m.get("purchased", False)
+                        and m["associated_upgrade_index"] < len(upgrades)
+                        and upgrades[m["associated_upgrade_index"]]["owned"] >= m["requires_owned"]
+                    )
+                ]
+            else:
+                upgrades = []
+                multipliers = []
 
-                    # Line 1: Name
-                    lines.append(upg['name'])
+            # Show up to 5 multipliers at a time
+            multipliers = multipliers[:5]
 
-                    # Line 2: Cost, Owned, Gain
-                    lines.append(f"Cost: {display_cost} | Owned: {upg['owned']} | {display_gain}")
+            # --- Draw shop multiplier boxes ---
+            hovered_tooltip = None
+            for i, m in enumerate(multipliers):
+                box_x = left_width + shop_box_margin + i * (shop_box_width + shop_box_gap)
+                rect = pygame.Rect(box_x, shop_box_y, shop_box_width, shop_box_height)
+                can_afford = state.coins >= m["cost"]
 
-                    # Line 3: Total CP/CPS
-                    if state.active_tab == "CP":
-                        multiplier = state.get_total_multiplier_for_upgrade(i, "click")
-                        total_cp = round(upg["click_power"] * upg["owned"] * multiplier, 2)
-                        lines.append(f"Total CP: {format_large_number(total_cp)}")
-                    elif state.active_tab == "CPS":
-                        multiplier = state.get_total_multiplier_for_upgrade(i, "auto")
-                        total_cps = round(upg["cps"] * upg["owned"] * multiplier, 2)
-                        lines.append(f"Total CPS: {format_large_number(total_cps)}")
+                # 1. Draw box background
+                pygame.draw.rect(screen, BUTTON_BG, rect, border_radius=8)
 
-
-                    draw_button(screen, rect, enabled=can_buy, hover=hover)
-
-                    # === IMAGE ===
-                    image_size = rect.height - 10
-                    filename = upg["name"].lower().replace(" ", "").replace(":", "") + ".png"
-                    image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/{filename}"
-                    fallback_image_path = f"C:/Users/Administrator/Documents/Coin Game/assets/pixelpuncher.png"
-
+                # 2. Draw image (upgrade icon or fallback)
+                image_path = m.get("image_path")
+                image_to_draw = None
+                if image_path and os.path.exists(image_path):
                     try:
-                        image = pygame.image.load(image_path).convert_alpha() if os.path.exists(image_path) \
-                                else pygame.image.load(fallback_image_path).convert_alpha()
-                        image = pygame.transform.smoothscale(image, (image_size, image_size))
-                        image_pos = (rect.x + 5, rect.y + (rect.height - image_size) // 2)
-                        screen.blit(image, image_pos)
+                        image_to_draw = pygame.image.load(image_path).convert_alpha()
+                    except Exception as e:
+                        print(f"Failed to load image for {m['name']}: {e}")
+                if image_to_draw is None:
+                    placeholder_path = os.path.join(ASSETS_DIR, "pixelpuncher.png")
+                    if os.path.exists(placeholder_path):
+                        try:
+                            image_to_draw = pygame.image.load(placeholder_path).convert_alpha()
+                        except Exception as e:
+                            print(f"Failed to load placeholder: {e}")
+                if image_to_draw:
+                    image_to_draw = pygame.transform.smoothscale(image_to_draw, (rect.width, rect.height))
+                    screen.blit(image_to_draw, rect.topleft)
+
+                # 3. Overlay if not affordable
+                if not can_afford:
+                    overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+                    overlay.fill((0, 0, 0, 100))
+                    screen.blit(overlay, rect.topleft)
+
+                # 4. Handle hover and tooltip
+                if rect.collidepoint(mouse_pos):
+                    hovered_tooltip = (
+                        f"{m['name']}\n"
+                        f"Level: {m.get('level', 1)}\n"
+                        f"Cost: {format_large_number(m['cost'])}\n"
+                        f"Boost: +{int(m['boost_percent'] * 100)}%",
+                        rect
+                    )
+
+                # 5. Buy logic
+                if mouse_down and rect.collidepoint(mouse_pos) and can_afford:
+                    state.coins -= m["cost"]
+                    m["purchased"] = True
+                    state.shop_box_flash_timers[i] = pygame.time.get_ticks()
+                    mouse_down = False
+
+            # Move upgrade list down below shop boxes
+            start_y += shop_box_height + 10
+
+            # --- Draw upgrades list ---
+            upgrade_height = max(60, int(window_height * 0.09))
+            upgrade_margin = 10
+            visible_height = window_height - start_y - 90
+
+            # Set clip to only draw upgrades in the visible panel area
+            clip_rect = pygame.Rect(left_width, start_y, right_width, visible_height)
+            screen.set_clip(clip_rect)
+
+            for i, upg in enumerate(upgrades):
+                y = start_y + i * (upgrade_height + upgrade_margin) - state.upgrade_scroll
+                rect = pygame.Rect(left_width + 20, y, right_width - 40, upgrade_height)
+                can_buy = state.can_buy_upgrade(upg, 1)
+                hover = rect.collidepoint(mouse_pos)
+
+                # Draw upgrade button
+                draw_button(screen, rect, enabled=can_buy, hover=hover)
+
+                # Draw upgrade image (icon logic as above)
+                image_size = rect.height - 10
+                filename = upg["name"].lower().replace(" ", "").replace(":", "") + ".png"
+                image_path = os.path.join(ASSETS_DIR, filename)
+                image_to_draw = None
+                if os.path.exists(image_path):
+                    try:
+                        image_to_draw = pygame.image.load(image_path).convert_alpha()
                     except Exception as e:
                         print(f"Image load fail for {upg['name']}: {e}")
+                if image_to_draw is None:
+                    placeholder_path = os.path.join(ASSETS_DIR, "pixelpuncher.png")
+                    if os.path.exists(placeholder_path):
+                        try:
+                            image_to_draw = pygame.image.load(placeholder_path).convert_alpha()
+                        except Exception as e:
+                            print(f"Failed to load placeholder: {e}")
+                if image_to_draw:
+                    image_to_draw = pygame.transform.smoothscale(image_to_draw, (image_size, image_size))
+                    image_pos = (rect.x + 5, rect.y + (rect.height - image_size) // 2)
+                    screen.blit(image_to_draw, image_pos)
 
-                    # === TEXT (right of image) ===
-                    text_x = rect.x + image_size + 15
-                    text_width = rect.width - image_size - 20
-                    text_rect = pygame.Rect(text_x, rect.y, text_width, rect.height)
-                    font_height = FONT.get_height()
-                    for j, line in enumerate(lines):
-                        rendered = FONT.render(line, True, TEXT_COLOR)
-                        screen.blit(rendered, (text_x, rect.y + 5 + j * (font_height + 2)))
+                # Draw upgrade text
+                text_x = rect.x + image_size + 15
+                font_height = FONT.get_height()
+                lines = [
+                    upg['name'],
+                    f"Cost: {format_large_number(upg.get('base_cost', upg.get('cost', 0)))} | Owned: {upg.get('owned', 0)} | {'CP' if state.active_tab == 'CP' else 'CPS'} +{upg.get('click_power', upg.get('cps', 0))}",
+                    f"Total {'CP' if state.active_tab == 'CP' else 'CPS'}: {format_large_number(round((upg.get('click_power', upg.get('cps', 0)) * upg.get('owned', 0)), 2))}"
+                ]
+                for j, line in enumerate(lines):
+                    rendered = FONT.render(line, True, TEXT_COLOR)
+                    screen.blit(rendered, (text_x, rect.y + 5 + j * (font_height + 2)))
 
-                    # === TOOLTIP LOGIC: Only store tooltip values for later drawing ===
-                    hover = rect.collidepoint(mouse_pos)
-                    if hover:
-                        tooltip_text = (
-                            f"{upg['name']}\n"
-                            f"Cost: {format_large_number(upg['base_cost'])}\n"
-                            f"+{int(upg.get('click_power', upg.get('cps', 0)))} Power"
-                        )
-                        tooltip_width = 200
-                        tooltip_height = 60
-                        tooltip_x = rect.centerx - tooltip_width // 2
-                        tooltip_y = rect.bottom + 10
-                        tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
-                        
-                        tooltip_queue.append((tooltip_text, tooltip_rect))  # ✅ store for later
+                # Handle hover and tooltip for upgrades
+                if hover:
+                    hovered_tooltip = (
+                        f"{upg['name']}\n"
+                        f"Cost: {format_large_number(upg.get('base_cost', upg.get('cost', 0)))}\n"
+                        f"Owned: {upg.get('owned', 0)}\n"
+                        f"{'CP' if state.active_tab == 'CP' else 'CPS'}: +{upg.get('click_power', upg.get('cps', 0))}",
+                        rect
+                    )
 
+            # --- Draw tooltip if any ---
+            screen.set_clip(None)
+            if hovered_tooltip:
+                tooltip_text, tooltip_rect = hovered_tooltip
+                tooltip_width = 200
+                tooltip_height = 80
+                tooltip_x = tooltip_rect.centerx - tooltip_width // 2
+                tooltip_y = tooltip_rect.bottom + 10
+                draw_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
+                pygame.draw.rect(screen, (30, 30, 60), draw_rect, border_radius=6)
+                for idx, line in enumerate(tooltip_text.split('\n')):
+                    font = pygame.font.SysFont(None, 22)
+                    txt_surf = font.render(line, True, (255, 255, 255))
+                    screen.blit(txt_surf, (draw_rect.x + 10, draw_rect.y + 8 + idx * 22))
 
-                    # === Click Logic ===
-                    if mouse_down and hover and can_buy:
-                        state.buy_upgrade(upg, n_levels)
-                        mouse_down = False
-
-
-                screen.set_clip(None)
 
                 multiplier_btn_width = max(40, int(window_width * 0.06))
                 multiplier_btn_height = max(30, int(window_height * 0.06))
